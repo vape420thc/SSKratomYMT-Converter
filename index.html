@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคิดเลขปริมาณน้ำและเครื่องคิดเลขทั่วไป</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #9b59b6;
+            --dark-bg: #121826;
+            --dark-card: #1e293b;
+            --dark-card-hover: #273449;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+            --dark-border: #334155;
+            --dark-input: #0f172a;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .calculator {
+            background: var(--dark-card);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 1px solid var(--dark-border);
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: var(--dark-text);
+            font-size: 28px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .header h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .header p {
+            color: var(--dark-text-secondary);
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .water-icon {
+            color: var(--primary);
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background: var(--dark-input);
+            border-radius: 12px;
+            padding: 5px;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--dark-text-secondary);
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--dark-text);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 15px;
+            color: var(--primary);
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid var(--dark-border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: var(--dark-input);
+            color: var(--dark-text);
+            position: relative;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background-color: var(--dark-card);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .input-hint {
+            font-size: 13px;
+            color: var(--dark-text-secondary);
+            margin-top: 5px;
+            padding-left: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover:before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #475569, #64748b);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--dark-card), var(--dark-card-hover));
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result h3 {
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            color: var(--success);
+            font-weight: 700;
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--dark-input);
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--success);
+        }
+
+        .details {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--dark-border);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .detail-label {
+            color: var(--dark-text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--dark-text);
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #1e3a8a, #3730a3);
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-content {
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        .info-content p {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--dark-text-secondary);
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        /* เครื่องคิดเลขทั่วไป */
+        .calculator-display {
+            width: 100%;
+            padding: 20px;
+            font-size: 24px;
+            text-align: right;
+            border: 2px solid var(--dark-border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background-color: var(--dark-input);
+            color: var(--dark-text);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .calc-btn {
+            padding: 18px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background: var(--dark-input);
+            color: var(--dark-text);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .calc-btn:hover {
+            background: var(--dark-border);
+            transform: translateY(-2px);
+        }
+
+        .calc-btn.operator {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+        }
+
+        .calc-btn.equals {
+            background: linear-gradient(135deg, var(--secondary), #27ae60);
+            color: white;
+        }
+
+        .calc-btn.clear {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .history-section {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .history-list {
+            list-style: none;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-expression {
+            color: var(--dark-text-secondary);
+        }
+
+        .history-result {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .clear-history {
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            color: var(--dark-text-secondary);
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .clear-history:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* สไตล์สำหรับแท็บคำนวณผลรวม */
+        .bottle-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bottle-card {
+            background: var(--dark-input);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .bottle-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bottle-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bottle-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+
+        .bottle-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .bottle-size {
+            color: var(--dark-text-secondary);
+            font-size: 14px;
+        }
+
+        .bottle-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bottle-input-container input {
+            flex: 1;
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .bottle-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .bottle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: var(--dark-card);
+            color: var(--dark-text);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .bottle-btn:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .total-display {
+            background: linear-gradient(135deg, var(--dark-input), var(--dark-card));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .total-label {
+            color: var(--dark-text-secondary);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .total-value {
+            color: var(--success);
+            font-size: 32px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .total-unit {
+            color: var(--dark-text-secondary);
+            font-size: 18px;
+        }
+
+        .bottle-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: var(--dark-input);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--dark-border);
+        }
+
+        .summary-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--dark-text-secondary);
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .result-value {
+                font-size: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .calculator-buttons {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            
+            .calc-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: auto;
+            }
+            
+            .bottle-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .total-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="header">
+                <h1><i class="fas fa-calculator water-icon"></i> SSKratom-YMT • ส.สามสี </h1>
+                <p> •  SSKratom-YMT ส.สามสี  •  |  เครื่องมือคำนวณ</p>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="water-calculator">
+                    <i class="fas fa-tint"></i> แปลงปริมาตรน้ำ
+                </button>
+                <button class="tab" data-tab="general-calculator">
+                    <i class="fas fa-calculator"></i> เครื่องคิดเลข
+                </button>
+                <button class="tab" data-tab="volume-calculator">
+                    <i class="fas fa-wine-bottle"></i> ผลรวมปริมาตร
+                </button>
+            </div>
+            
+            <!-- แท็บเครื่องคิดเลขน้ำ -->
+            <div class="tab-content active" id="water-calculator">
+                <div class="info-box">
+                    <div class="info-title">
+                        <i class="fas fa-info-circle"></i>
+                        <span>ข้อมูลพื้นฐาน</span>
+                    </div>
+                    <div class="info-content">
+                        <p><i class="fas fa-check-circle"></i> น้ำ 1,000 มล. ราคา 40 บาท</p>
+                        <p><i class="fas fa-exchange-alt"></i> คำนวณปริมาณน้ำระหว่างขวด 1,000 มล. และ 800 มล.</p>
+                        <p><i class="fas fa-keyboard"></i> ป้อนข้อมูลอย่างใดอย่างหนึ่ง แล้วกดคำนวณ</p>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="bottles1000"><i class="fas fa-wine-bottle"></i> จำนวนขวดน้ำ 1,000 มล.</label>
+                        <div class="input-container">
+                            <i class="fas fa-wine-bottle"></i>
+                            <input type="number" id="bottles1000" min="0" step="0.01" placeholder="กรอกจำนวนขวด 1,000 มล.">
+                        </div>
+                        <div class="input-hint">ป้อนจำนวนขวดน้ำขนาด 1,000 มล. ที่ต้องการคำนวณ</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bottles800"><i class="fas fa-wine-bottle"></i> จำนวนขวดน้ำ 800 มล.</label>
+                        <div class="input-container">
+                            <i class="fas fa-wine-bottle"></i>
+                            <input type="number" id="bottles800" min="0" step="0.01" placeholder="กรอกจำนวนขวด 800 มล.">
+                        </div>
+                        <div class="input-hint">ป้อนจำนวนขวดน้ำขนาด 800 มล. ที่ต้องการคำนวณ</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="calculateWater()">
+                        <i class="fas fa-calculator"></i> คำนวณ
+                    </button>
+                    <button class="secondary" onclick="clearWaterInputs()">
+                        <i class="fas fa-eraser"></i> ล้างข้อมูล
+                    </button>
+                </div>
+                
+                <div class="result" id="water-result">
+                    <h3><i class="fas fa-clipboard-check"></i> ผลการคำนวณ</h3>
+                    <div class="result-value" id="water-resultText"></div>
+                    <div class="details" id="water-details"></div>
+                </div>
+            </div>
+            
+            <!-- แท็บเครื่องคิดเลขทั่วไป -->
+            <div class="tab-content" id="general-calculator">
+                <div class="info-box">
+                    <div class="info-title">
+                        <i class="fas fa-calculator"></i>
+                        <span>เครื่องคิดเลขทั่วไป</span>
+                    </div>
+                    <div class="info-content">
+                        <p><i class="fas fa-history"></i> ประวัติการคำนวณจะถูกบันทึกชั่วคราว</p>
+                        <p><i class="fas fa-memory"></i> ใช้ปุ่ม M+ เพื่อบันทึกค่าปัจจุบัน</p>
+                    </div>
+                </div>
+                
+                <div class="calculator-display" id="calc-display">
+                    <div id="calc-expression">0</div>
+                    <div id="calc-result"></div>
+                </div>
+                
+                <div class="calculator-buttons">
+                    <button class="calc-btn clear" onclick="clearCalculator()">C</button>
+                    <button class="calc-btn clear" onclick="clearEntry()">CE</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('%')">%</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('/')">/</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('7')">7</button>
+                    <button class="calc-btn" onclick="appendToDisplay('8')">8</button>
+                    <button class="calc-btn" onclick="appendToDisplay('9')">9</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('*')">×</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('4')">4</button>
+                    <button class="calc-btn" onclick="appendToDisplay('5')">5</button>
+                    <button class="calc-btn" onclick="appendToDisplay('6')">6</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('-')">-</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('1')">1</button>
+                    <button class="calc-btn" onclick="appendToDisplay('2')">2</button>
+                    <button class="calc-btn" onclick="appendToDisplay('3')">3</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('+')">+</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('0')">0</button>
+                    <button class="calc-btn" onclick="appendToDisplay('.')">.</button>
+                    <button class="calc-btn equals" onclick="calculateExpression()">=</button>
+                    <button class="calc-btn operator" onclick="memoryAdd()">M+</button>
+                </div>
+                
+                <div class="history-section">
+                    <div class="history-title">
+                        <h3><i class="fas fa-history"></i> ประวัติการคำนวณ</h3>
+                        <button class="clear-history" onclick="clearHistory()">ล้างประวัติ</button>
+                    </div>
+                    <ul class="history-list" id="calc-history"></ul>
+                </div>
+            </div>
+            
+            <!-- แท็บคำนวณผลรวมปริมาตร -->
+            <div class="tab-content" id="volume-calculator">
+                <div class="info-box">
+                    <div class="info-title">
+                        <i class="fas fa-wine-bottle"></i>
+                        <span>คำนวณผลรวมปริมาตรน้ำ</span>
+                    </div>
+                    <div class="info-content">
+                        <p><i class="fas fa-calculator"></i> กรอกจำนวนขวดแต่ละขนาดเพื่อคำนวณปริมาตรรวม</p>
+                        <p><i class="fas fa-sync-alt"></i> ผลลัพธ์จะคำนวณอัตโนมัติเมื่อกรอกข้อมูล</p>
+                    </div>
+                </div>
+                
+                <div class="bottle-inputs">
+                    <!-- ขวด 800 มล. -->
+                    <div class="bottle-card">
+                        <div class="bottle-header">
+                            <div class="bottle-icon">
+                                <i class="fas fa-wine-bottle"></i>
+                            </div>
+                            <div>
+                                <div class="bottle-title">ขวดขนาด 800 มล.</div>
+                                <div class="bottle-size">ปริมาตรต่อขวด: 0.8 ลิตร</div>
+                            </div>
+                        </div>
+                        <div class="bottle-input-container">
+                            <input type="number" id="bottle800" min="0" value="0" oninput="calculateTotalVolume()">
+                            <div class="bottle-controls">
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle800', 1)">+</button>
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle800', -1)">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ขวด 1000 มล. -->
+                    <div class="bottle-card">
+                        <div class="bottle-header">
+                            <div class="bottle-icon" style="background: linear-gradient(135deg, var(--secondary), #27ae60);">
+                                <i class="fas fa-wine-bottle"></i>
+                            </div>
+                            <div>
+                                <div class="bottle-title">ขวดขนาด 1,000 มล.</div>
+                                <div class="bottle-size">ปริมาตรต่อขวด: 1.0 ลิตร</div>
+                            </div>
+                        </div>
+                        <div class="bottle-input-container">
+                            <input type="number" id="bottle1000" min="0" value="0" oninput="calculateTotalVolume()">
+                            <div class="bottle-controls">
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle1000', 1)">+</button>
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle1000', -1)">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ขวด 1500 มล. -->
+                    <div class="bottle-card">
+                        <div class="bottle-header">
+                            <div class="bottle-icon" style="background: linear-gradient(135deg, var(--accent), #8e44ad);">
+                                <i class="fas fa-wine-bottle"></i>
+                            </div>
+                            <div>
+                                <div class="bottle-title">ขวดขนาด 1,500 มล.</div>
+                                <div class="bottle-size">ปริมาตรต่อขวด: 1.5 ลิตร</div>
+                            </div>
+                        </div>
+                        <div class="bottle-input-container">
+                            <input type="number" id="bottle1500" min="0" value="0" oninput="calculateTotalVolume()">
+                            <div class="bottle-controls">
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle1500', 1)">+</button>
+                                <button class="bottle-btn" onclick="changeBottleValue('bottle1500', -1)">-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="total-display">
+                    <div class="total-label">ปริมาตรน้ำทั้งหมด</div>
+                    <div class="total-value" id="totalVolume">0.00</div>
+                    <div class="total-unit">ลิตร</div>
+                    
+                    <div class="bottle-summary">
+                        <div class="summary-item">
+                            <div class="summary-value" id="total800">0</div>
+                            <div class="summary-label">ขวด 800 มล.</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="total1000">0</div>
+                            <div class="summary-label">ขวด 1,000 มล.</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="total1500">0</div>
+                            <div class="summary-label">ขวด 1,500 มล.</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="totalBottles">0</div>
+                            <div class="summary-label">ขวดทั้งหมด</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="resetVolumeCalculator()">
+                        <i class="fas fa-undo"></i> รีเซ็ต
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p> © 2025 SSKratom-YMT ส.สามสี | เครื่องมือคำนวณ </p>
+        </div>
+    </div>
+
+    <script>
+        // ระบบแท็บ
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // ลบคลาส active จากแท็บทั้งหมด
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // เพิ่มคลาส active ให้แท็บที่คลิก
+                tab.classList.add('active');
+                
+                // ซ่อนเนื้อหาแท็บทั้งหมด
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // แสดงเนื้อหาแท็บที่เลือก
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // ฟังก์ชันสำหรับเครื่องคิดเลขน้ำ
+        function calculateWater() {
+            // รับค่าจำนวนขวดจากผู้ใช้
+            const bottles1000Input = document.getElementById('bottles1000');
+            const bottles800Input = document.getElementById('bottles800');
+            
+            const bottles1000 = parseFloat(bottles1000Input.value);
+            const bottles800 = parseFloat(bottles800Input.value);
+            
+            // ตรวจสอบว่าผู้ใช้กรอกข้อมูลหรือไม่
+            if ((isNaN(bottles1000) || bottles1000 < 0) && (isNaN(bottles800) || bottles800 < 0)) {
+                alert('กรุณากรอกจำนวนขวดน้ำอย่างน้อยหนึ่งช่อง');
+                bottles1000Input.focus();
+                return;
+            }
+            
+            // ตรวจสอบว่ากรอกข้อมูลทั้งสองช่อง
+            if (!isNaN(bottles1000) && bottles1000 >= 0 && !isNaN(bottles800) && bottles800 >= 0) {
+                alert('กรุณากรอกข้อมูลเพียงช่องเดียวเท่านั้น');
+                return;
+            }
+            
+            let totalML, bottles1000ml, bottles800ml, totalPrice, calculationType;
+            
+            // คำนวณตามข้อมูลที่ป้อน
+            if (!isNaN(bottles1000) && bottles1000 >= 0) {
+                // คำนวณจากขวด 1,000 มล.
+                totalML = bottles1000 * 1000;
+                bottles1000ml = bottles1000;
+                bottles800ml = totalML / 800;
+                calculationType = "from1000";
+            } else {
+                // คำนวณจากขวด 800 มล.
+                totalML = bottles800 * 800;
+                bottles800ml = bottles800;
+                bottles1000ml = totalML / 1000;
+                calculationType = "from800";
+            }
+            
+            // คำนวณราคารวม
+            totalPrice = bottles1000ml * 40;
+            
+            // แสดงผลลัพธ์
+            const resultDiv = document.getElementById('water-result');
+            const resultText = document.getElementById('water-resultText');
+            const detailsDiv = document.getElementById('water-details');
+            
+            if (calculationType === "from1000") {
+                resultText.innerHTML = `<i class="fas fa-exchange-alt"></i> ${bottles1000} ขวด (1,000 มล.) = ${bottles800ml.toFixed(2)} ขวด (800 มล.)`;
+            } else {
+                resultText.innerHTML = `<i class="fas fa-exchange-alt"></i> ${bottles800} ขวด (800 มล.) = ${bottles1000ml.toFixed(2)} ขวด (1,000 มล.)`;
+            }
+            
+            detailsDiv.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">ปริมาณน้ำทั้งหมด:</span>
+                    <span class="detail-value">${totalML.toLocaleString()} มล.</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">จำนวนขวด 1,000 มล.:</span>
+                    <span class="detail-value">${bottles1000ml.toFixed(2)} ขวด</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">จำนวนขวด 800 มล.:</span>
+                    <span class="detail-value">${bottles800ml.toFixed(2)} ขวด</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">ราคารวม (1,000 มล.):</span>
+                    <span class="detail-value">${totalPrice.toLocaleString()} บาท</span>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            
+            // เพิ่มเอฟเฟกต์การเลื่อนไปยังผลลัพธ์
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function clearWaterInputs() {
+            document.getElementById('bottles1000').value = '';
+            document.getElementById('bottles800').value = '';
+            document.getElementById('water-result').style.display = 'none';
+            document.getElementById('bottles1000').focus();
+        }
+        
+        // อนุญาตให้กด Enter เพื่อคำนวณ
+        document.getElementById('bottles1000').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateWater();
+            }
+        });
+        
+        document.getElementById('bottles800').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateWater();
+            }
+        });
+        
+        // เมื่อผู้ใช้ป้อนข้อมูลในช่องหนึ่ง ให้ล้างช่องอื่น
+        document.getElementById('bottles1000').addEventListener('input', function() {
+            if (this.value !== '') {
+                document.getElementById('bottles800').value = '';
+            }
+        });
+        
+        document.getElementById('bottles800').addEventListener('input', function() {
+            if (this.value !== '') {
+                document.getElementById('bottles1000').value = '';
+            }
+        });
+
+        // ฟังก์ชันสำหรับเครื่องคิดเลขทั่วไป
+        let currentExpression = '0';
+        let currentResult = '';
+        let memoryValue = 0;
+        let calculationHistory = [];
+
+        function updateDisplay() {
+            document.getElementById('calc-expression').textContent = currentExpression;
+            document.getElementById('calc-result').textContent = currentResult;
+        }
+
+        function appendToDisplay(value) {
+            if (currentExpression === '0' && value !== '.') {
+                currentExpression = value;
+            } else {
+                currentExpression += value;
+            }
+            updateDisplay();
+        }
+
+        function clearCalculator() {
+            currentExpression = '0';
+            currentResult = '';
+            updateDisplay();
+        }
+
+        function clearEntry() {
+            if (currentExpression.length > 1) {
+                currentExpression = currentExpression.slice(0, -1);
+            } else {
+                currentExpression = '0';
+            }
+            updateDisplay();
+        }
+
+        function calculateExpression() {
+            try {
+                // แทนที่สัญลักษณ์คณิตศาสตร์สำหรับการคำนวณ
+                let expression = currentExpression.replace(/×/g, '*').replace(/÷/g, '/');
+                
+                // ตรวจสอบนิพจน์ที่ปลอดภัย
+                if (/[^0-9+\-*/.%()\s]/.test(expression)) {
+                    throw new Error('นิพจน์ไม่ปลอดภัย');
+                }
+                
+                // คำนวณผลลัพธ์
+                let result = eval(expression);
+                
+                // จัดรูปแบบผลลัพธ์
+                if (Number.isInteger(result)) {
+                    currentResult = result.toString();
+                } else {
+                    currentResult = result.toFixed(6).replace(/\.?0+$/, '');
+                }
+                
+                // บันทึกลงประวัติ
+                addToHistory(currentExpression, currentResult);
+                
+                // รีเซ็ตนิพจน์เป็นผลลัพธ์
+                currentExpression = currentResult;
+                
+                updateDisplay();
+            } catch (error) {
+                currentResult = 'Error';
+                updateDisplay();
+                setTimeout(() => {
+                    currentResult = '';
+                    updateDisplay();
+                }, 1500);
+            }
+        }
+
+        function memoryAdd() {
+            if (currentResult) {
+                memoryValue = parseFloat(currentResult);
+                alert(`บันทึกค่า ${memoryValue} ลงหน่วยความจำแล้ว`);
+            }
+        }
+
+        function addToHistory(expression, result) {
+            calculationHistory.unshift({ expression, result });
+            if (calculationHistory.length > 10) {
+                calculationHistory.pop();
+            }
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('calc-history');
+            historyList.innerHTML = '';
+            
+            calculationHistory.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <span class="history-expression">${item.expression}</span>
+                    <span class="history-result">= ${item.result}</span>
+                `;
+                historyList.appendChild(li);
+            });
+        }
+
+        function clearHistory() {
+            calculationHistory = [];
+            updateHistoryDisplay();
+        }
+
+        // ฟังก์ชันสำหรับแท็บคำนวณผลรวมปริมาตร
+        function changeBottleValue(bottleId, change) {
+            const input = document.getElementById(bottleId);
+            let value = parseInt(input.value) || 0;
+            value += change;
+            if (value < 0) value = 0;
+            input.value = value;
+            calculateTotalVolume();
+        }
+
+        function calculateTotalVolume() {
+            // รับค่าจำนวนขวดแต่ละขนาด
+            const bottle800 = parseInt(document.getElementById('bottle800').value) || 0;
+            const bottle1000 = parseInt(document.getElementById('bottle1000').value) || 0;
+            const bottle1500 = parseInt(document.getElementById('bottle1500').value) || 0;
+            
+            // คำนวณปริมาตรรวม (ลิตร)
+            const totalVolume = (bottle800 * 0.8) + (bottle1000 * 1.0) + (bottle1500 * 1.5);
+            
+            // อัพเดทผลลัพธ์
+            document.getElementById('totalVolume').textContent = totalVolume.toFixed(2);
+            document.getElementById('total800').textContent = bottle800;
+            document.getElementById('total1000').textContent = bottle1000;
+            document.getElementById('total1500').textContent = bottle1500;
+            document.getElementById('totalBottles').textContent = bottle800 + bottle1000 + bottle1500;
+        }
+
+        function resetVolumeCalculator() {
+            document.getElementById('bottle800').value = 0;
+            document.getElementById('bottle1000').value = 0;
+            document.getElementById('bottle1500').value = 0;
+            calculateTotalVolume();
+        }
+
+        // เริ่มต้นแสดงผล
+        updateDisplay();
+        calculateTotalVolume();
+    </script>
+</body>
+</html>
